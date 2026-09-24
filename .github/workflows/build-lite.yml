@@ -1,10 +1,9 @@
 name: Build Lite (no PacketEvents shaded)
 
 on:
-  push:
-    branches: [ "2.0", "main", "master" ]   # change to your default branch if different
-  pull_request:
-  workflow_dispatch:                        # lets you run it manually from the Actions tab
+  push:                          # ← this fires on every sync / push to the default branch
+    branches: [ "2.0", "main", "master" ]   # put your real default branch here
+  workflow_dispatch:             # still allows manual runs
 
 jobs:
   build:
@@ -18,7 +17,7 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          java-version: '21'                # use 25 if your fork requires it
+          java-version: '21'          # change to 25 if needed
           distribution: 'temurin'
 
       - name: Setup Gradle
@@ -36,8 +35,7 @@ jobs:
           path: bukkit/build/libs/*.jar
           if-no-files-found: error
 
-      # Optional – only if you also want the Fabric jar
-      - name: Upload Fabric artifact
+      - name: Upload Fabric artifact (optional)
         uses: actions/upload-artifact@v4
         with:
           name: grimac-fabric-lite
