@@ -1,0 +1,45 @@
+name: Build Lite (no PacketEvents shaded)
+
+on:
+  push:
+    branches: [ "2.0", "main", "master" ]   # change to your default branch if different
+  pull_request:
+  workflow_dispatch:                        # lets you run it manually from the Actions tab
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'                # use 25 if your fork requires it
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Build lite jar
+        env:
+          SHADE_PE: false
+        run: ./gradlew build -PshadePE=false --no-daemon
+
+      - name: Upload Bukkit artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: grimac-bukkit-lite
+          path: bukkit/build/libs/*.jar
+          if-no-files-found: error
+
+      # Optional – only if you also want the Fabric jar
+      - name: Upload Fabric artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: grimac-fabric-lite
+          path: fabric/build/libs/*.jar
+          if-no-files-found: warn
